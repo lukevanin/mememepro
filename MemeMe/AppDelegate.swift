@@ -17,15 +17,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let memes = Memes.shared
-        memes.add(meme:
-            Meme(
-                topText: "TOOK UDACITY IOS NANODEGREE",
-                bottomText: "MADE A MEME APP",
-                originalImage: UIImage(named: "sample")!,
-                memedImage: UIImage(named: "sample-complete")!
-            )
-        );
+//        let memes = Memes.shared
+//        memes.add(meme:
+//            Meme(
+//                topText: "TOOK UDACITY IOS NANODEGREE",
+//                bottomText: "MADE A MEME APP",
+//                originalImage: UIImage(named: "sample")!,
+//                memedImage: UIImage(named: "sample-complete")!
+//            )
+//        )
         
         return true
     }

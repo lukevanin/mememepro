@@ -236,7 +236,7 @@
         <scene sceneID="Wts-Hf-9tb">
             <objects>
                 <collectionViewController id="BSp-M8-pse" customClass="MemesCollectionViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="gJR-iq-Sbx">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="gJR-iq-Sbx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
@@ -259,6 +259,7 @@
                                         </imageView>
                                     </subviews>
                                 </view>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="jeG-xg-Es2" firstAttribute="top" secondItem="yDV-o5-VMY" secondAttribute="top" id="Bvf-hj-g6T"/>
                                     <constraint firstItem="jeG-xg-Es2" firstAttribute="leading" secondItem="yDV-o5-VMY" secondAttribute="leading" id="SiN-Rl-KWk"/>
@@ -302,14 +303,15 @@
                                 <rect key="frame" x="0.0" y="28" width="320" height="141"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="84U-ec-D4P" id="5ae-pu-ta0">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="140"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="140.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="mor-Na-Q1f">
                                             <rect key="frame" x="8" y="8" width="304" height="124.5"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gG7-ed-uwX">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="gG7-ed-uwX">
                                                     <rect key="frame" x="0.0" y="4" width="116.5" height="116.5"/>
+                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="gG7-ed-uwX" secondAttribute="height" multiplier="1:1" id="syi-Qj-EBJ"/>
                                                     </constraints>
@@ -332,9 +334,6 @@
                                                     </subviews>
                                                 </stackView>
                                             </subviews>
-                                            <constraints>
-                                                <constraint firstItem="gG7-ed-uwX" firstAttribute="width" secondItem="gG7-ed-uwX" secondAttribute="height" multiplier="1:1" id="dPq-1c-Ab9"/>
-                                            </constraints>
                                         </stackView>
                                     </subviews>
                                     <constraints>
@@ -440,8 +439,8 @@
         <image name="table" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="AoP-Le-XpW"/>
-        <segue reference="bzO-NG-lgC"/>
+        <segue reference="TnG-rT-34L"/>
+        <segue reference="Taz-zK-Bge"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
 </document>
