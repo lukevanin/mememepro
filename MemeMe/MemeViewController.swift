@@ -5,10 +5,18 @@
 //  Created by Luke Van In on 2017/01/01.
 //  Copyright © 2017 Luke Van In. All rights reserved.
 //
+//  Allow the user to create a new meme, either from a blank canvas, or by using the contents of another meme. Once 
+//  created, the meme can be shared and saved.
+//
 
 import UIKit
 
 class MemeViewController: UIViewController, UIBarPositioningDelegate {
+    
+    
+    //
+    // MARK: Properties
+    //
     
     var defaultMeme: Meme?
     
@@ -16,15 +24,6 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     
     let defaultTopText = "Top Text"
     let defaultBottomText = "Bottom Text"
-    
-    lazy var memeTextAttributes : [String : Any] = {
-        return [
-            NSForegroundColorAttributeName: UIColor.white,
-            NSStrokeColorAttributeName: UIColor.black,
-            NSStrokeWidthAttributeName: -3.0,
-            NSFontAttributeName: UIFont(name: "Impact", size: 40)!
-        ]
-    }()
     
     lazy var topTextFieldDelegate: MemeTextFieldDelegate = { [unowned self] in
         let delegate = MemeTextFieldDelegate(defaultText: self.defaultTopText)
@@ -53,6 +52,14 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         }
     }
 
+    
+    
+    //
+    // MARK: Interface builder outlets
+    //
+    
+    
+    
     @IBOutlet weak var shareButtonItem: UIBarButtonItem!
     @IBOutlet weak var cancelButtonItem: UIBarButtonItem!
     @IBOutlet weak var cameraButtonItem: UIBarButtonItem!
@@ -67,21 +74,37 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     // constraint being deallocated.
     @IBOutlet var offsetConstraint: NSLayoutConstraint!
     @IBOutlet var centerConstraint: NSLayoutConstraint!
-
-    //
-    //  Camera toolbar button item tapped. Import an image from the camera.
-    //
-    @IBAction func onCameraAction(_ sender: Any) {
-        resignResponders()
-        importImage(from: .camera)
-    }
+    
+    
     
     //
-    //  Album toolbar button item tapped. Import image from library.
+    // MARK: Actions
     //
-    @IBAction func onAlbumAction(_ sender: Any) {
+
+    
+    
+    //
+    //  Camera or album toolbar button item tapped. Import a new image from the camera or photo library.
+    //
+    //  In version 1.0 of the app this was implemented as two separate actions, one for camera, and one for library.
+    //  These were combined into a into a single action on the recommendation of the reviewer.
+    //
+    //  Comparing the two approaches, I personally prefer using separate actions since it is more descriptive, less 
+    //  error prone (ie easy to make a mistake with the tag IDs), and doesn't create any more or less duplication. 
+    //  A combined action selector as used here would still be useful in certain circumstances, where several buttons 
+    //  with similar actions are used (as in the PitchPerfect app).
+    //
+    @IBAction func onImportAction(_ sender: UIBarButtonItem) {
         resignResponders()
-        importImage(from: .photoLibrary)
+        
+        switch sender.tag {
+        case 500:
+            importImage(from: .camera)
+        case 501:
+            importImage(from: .photoLibrary)
+        default:
+            break
+        }
     }
     
     //
@@ -102,7 +125,12 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     
+    
+    //
     // MARK: View life cycle
+    //
+    
+    
     
     override var prefersStatusBarHidden: Bool {
         // Hide status bar to provide more visual space for editing.
@@ -111,10 +139,10 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        listInstalledFonts()
         configureTextFields()
+        configureButtons()
+        updateButtons()
         resetContent()
-        
         if let meme = defaultMeme {
             setMeme(meme)
         }
@@ -122,8 +150,6 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureButtons()
-        updateButtons()
         updateLayout()
         observeKeyboardNotifications()
     }
@@ -139,78 +165,22 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
             self.updateLayout()
         }, completion: nil)
     }
-    
-    //
-    //  Show a list of the fonts installed in the device.
-    //  Used during development to try some font variations.
-    //
-    private func listInstalledFonts() {
-        print("")
-        print("==========")
-        print("Installed fonts:")
-        for familyName in UIFont.familyNames {
-            let fontNames = UIFont.fontNames(forFamilyName: familyName)
-            for fontName in fontNames {
-                print("\(familyName).\(fontName)")
-            }
-        }
-        print("==========")
-        print("")
-    }
 
     
-    // MARK: Keyboard
     
-    private func observeKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: .UIKeyboardWillShow,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: .UIKeyboardWillHide,
-            object: nil
-        )
-    }
-    
-    private func unobserveKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .UIKeyboardWillShow,
-            object: nil
-        )
-        NotificationCenter.default.removeObserver(
-            self,
-            name: .UIKeyboardWillHide,
-            object: nil
-        )
-    }
-    
-    func keyboardWillShow(_ notification: Notification) {
-        guard let frame = getFrameForKeyboardNotification(notification) else {
-            return
-        }
-        
-        // Calculate the space required to by the keyboard. See updateLayout() functions.
-        contentInset = frame.height
-    }
-    
-    func keyboardWillHide(_ notification: Notification) {
-        // Keyboard is hidden, no content inset is required. See updateLayout() functions.
-        contentInset = 0
-    }
-    
-    private func getFrameForKeyboardNotification(_ notification: Notification) -> CGRect? {
-        let frameValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue
-        return frameValue?.cgRectValue
-    }
+    //
+    // MARK: User interface
+    //
     
     
-    // MARK: UI
     
+    //
+    //  Called when the editing state of a text field changes - when editing begins in a textfield, or when it editing
+    //  ends.
+    //
+    //  If the bottom text field is being edited, then content inset is enabled, to push the view upwards and keep the
+    //  textfield visible.
+    //
     private func onTextFieldEdit(_ textField: UITextField) {
         // If the bottom text field is being edited then apply the content inset for the keyboard. See updateLayout() functions.
         if bottomTextField.isFirstResponder {
@@ -237,20 +207,8 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     //
-    //  Adjusts the UI layout to compensate for the device orientation as defined by the traits collection, and the 
-    //  keyboard visibility.
-    //
-    //  Vertical aspect (portrait mode): 
-    //  Image fits to width of screen, centered vertically in the available space. The image is always visible in its
-    //  entirety, and moves vertically as the keyboard appearance changes.
-    //
-    //  Horizontal aspect (landscape mode):
-    //  Image is resized to fit the available height. When the keyboard appears and the bottom tet fiels is being 
-    //  edited, the image is shifted upwards to show the text field.
-    //
-    //  Note: The image maintains an aspect ration of 4:3. The example app shows using a unconstrained aspect ratio, 
-    //  relying on the device screen size to drive the layout. I found a fixed aspect ratio was more intuitive to use 
-    //  (ie users do not need to rotate the device to position text), and aesthetically pleasing (imho).
+    //  Adjusts the UI layout to compensate for the screen size according to the orientation of the device, and keyboard 
+    //  visibility.
     //
     private func updateLayout() {
         
@@ -297,9 +255,17 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     //
-    //
+    //  Set the font style, and delegate for a text field. 
+    //  The font is set to "Impact", size 40 points, white, with a black border.
+    //  A custom delegate is assigned to the text field, to control the appearance of the default placeholder text.
     //
     private func configureTextField(textField: UITextField, withDelegate delegate: MemeTextFieldDelegate) {
+        let memeTextAttributes : [String : Any] = [
+                NSForegroundColorAttributeName: UIColor.white,
+                NSStrokeColorAttributeName: UIColor.black,
+                NSStrokeWidthAttributeName: -3.0,
+                NSFontAttributeName: UIFont(name: "Impact", size: 40)!
+            ]
         textField.defaultTextAttributes = memeTextAttributes
         textField.textAlignment = .center
         textField.delegate = delegate
@@ -314,7 +280,12 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     
-    // MARK: Meme
+    
+    //
+    // MARK: Meme creation
+    //
+    
+    
     
     //
     //  Remove any existing edits and set the content to a default state (ie create a new meme).
@@ -329,7 +300,8 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     //
-    //
+    //  Update the view using a completed meme. Sets the image, and top and bottom textfields. Used when copying an 
+    //  existing meme to create a derived copy.
     //
     private func setMeme(_ meme: Meme) {
         setMemeImage(meme.originalImage)
@@ -338,10 +310,12 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     //
-    //
+    //  Updates the view with a new image.  The image is constrained to maintain its aspect ratio while fitting inside
+    //  the displayable area.
     //
     fileprivate func setMemeImage(_ image: UIImage) {
         memeImageView.image = image
+        
         let size = image.size
         let aspect = size.width / size.height
         setImageConstraintWithAspectRatio(aspect)
@@ -349,6 +323,16 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
     }
     
     //
+    //  Applies an aspect ratio constraint to the image.
+    //
+    //  Using an explicit constraint allows the text labels can be constrained to the image, which ensures that the text
+    //  always overlap the image content area correctly, independently of the size or aspect ratio of the image, and the
+    //  orientation of the device.
+    //
+    //  Using contentMode = .aspectFill or .aspectFit as suggested in the courseware prevents the text fields from
+    //  being constrained to the image, with the result that the text fields can appear outside the image. In the 
+    //  demonstration videos, the app is shown being rotated into landscape mode to force the labels to align correctly.
+    //  This is not necessary using th explicit constraint.
     //
     //
     fileprivate func setImageConstraintWithAspectRatio(_ aspect: CGFloat) {
@@ -359,38 +343,6 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         if let constraint = imageAspectConstraint {
             memeImageView.addConstraint(constraint)
         }
-    }
-    
-    //
-    //
-    //
-    private func showDismissConfirmationIfNeeded(completion: @escaping () -> Void) {
-        
-        if !hasChanges() {
-            // No content added - dismiss without confirmation.
-            completion()
-            return
-        }
-        
-        let title = "Your changes have not been saved"
-        let message = "Do you want to discard your changes?"
-        let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        controller.addAction(
-            UIAlertAction(
-                title: "Discard Changes",
-                style: .destructive,
-                handler: { (action) in
-                    completion()
-            })
-        )
-        controller.addAction(
-            UIAlertAction(
-                title: "Continue Editing",
-                style: .cancel,
-                handler: nil
-            )
-        )
-        present(controller, animated: true, completion: nil)
     }
 
     //
@@ -456,7 +408,7 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
             }
         }
         else {
-            // Meme was created from scratch. 
+            // Meme was created anew.
             // Check if any data has been provided so far.
             
             if getTopText() != nil {
@@ -475,6 +427,14 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         return false
     }
     
+    
+    
+    //
+    // MARK: Image import.
+    //
+    
+    
+    
     //
     //  Show an image picker to import an image.
     //
@@ -484,6 +444,14 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         viewController.delegate = self
         present(viewController, animated: true, completion: nil)
     }
+    
+    
+    
+    //
+    // MARK: Meme export and sharing.
+    //
+    
+    
     
     //
     //  Export the current meme image using an activity controller.
@@ -554,6 +522,15 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         memes.add(meme: meme)
     }
     
+    
+    
+    //
+    // MARK: Meme model creation.
+    //
+    
+    
+    
+    
     //
     //  Create a meme model from the current editor's state if possible.
     //
@@ -600,6 +577,14 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         return text
     }
     
+    
+    
+    //
+    // MARK: UI alerts
+    //
+    
+    
+    
     //
     //  Show an error alert.
     //
@@ -611,8 +596,116 @@ class MemeViewController: UIViewController, UIBarPositioningDelegate {
         controller.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         present(controller, animated: true, completion: nil)
     }
+    
+    //
+    //  Shows a prompt to confirm dismissing the view controller. The prompt is only shown if changes have been made to
+    //  the meme. If no changes have been made, then the prompt is not shown and the view is dismissed without
+    //  prompting.
+    //
+    //  The user is prompted to discard any changes they may have made, or continue editing and complete the meme.
+    //
+    private func showDismissConfirmationIfNeeded(completion: @escaping () -> Void) {
+        
+        if !hasChanges() {
+            // No content added - dismiss without confirmation.
+            completion()
+            return
+        }
+        
+        // User has made changes. Prompt to discard changes.
+        let title = "Your changes have not been saved"
+        let message = "Do you want to discard your changes?"
+        let controller = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        controller.addAction(
+            UIAlertAction(
+                title: "Discard Changes",
+                style: .destructive,
+                handler: { (action) in
+                    completion()
+            })
+        )
+        controller.addAction(
+            UIAlertAction(
+                title: "Continue Editing",
+                style: .cancel,
+                handler: nil
+            )
+        )
+        present(controller, animated: true, completion: nil)
+    }
 }
 
+//
+//  Keyboard control.
+//
+extension MemeViewController {
+    
+    //
+    //  Observe notifications for when keyboard appears and disappears.
+    //
+    fileprivate func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: .UIKeyboardWillShow,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: .UIKeyboardWillHide,
+            object: nil
+        )
+    }
+    
+    //
+    //  Remove keyboard notification observers.
+    //
+    fileprivate func unobserveKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .UIKeyboardWillShow,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .UIKeyboardWillHide,
+            object: nil
+        )
+    }
+    
+    //
+    //  Handle keyboard appearance notification. Calculate space used by keyboard, to allow the UI to adjust.
+    //
+    func keyboardWillShow(_ notification: Notification) {
+        guard let frame = getFrameForKeyboardNotification(notification) else {
+            return
+        }
+        
+        // Calculate the space required to by the keyboard. See updateLayout() functions.
+        contentInset = frame.height
+    }
+    
+    //
+    //  Handle keyboard disappearance notification.
+    //
+    func keyboardWillHide(_ notification: Notification) {
+        // Keyboard is hidden, no content inset is required. See updateLayout() functions.
+        contentInset = 0
+    }
+    
+    //
+    //  Utility function to calculate the display frame for the keyboard from a notification.
+    //
+    private func getFrameForKeyboardNotification(_ notification: Notification) -> CGRect? {
+        let frameValue = notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue
+        return frameValue?.cgRectValue
+    }
+}
+
+//
+//  UIScrollView delegate functions.
+//
 extension MemeViewController: UIScrollViewDelegate {
  
     //
@@ -624,6 +717,9 @@ extension MemeViewController: UIScrollViewDelegate {
     }
 }
 
+//
+//  UIImagePickerController delegate functions.
+//
 extension MemeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //

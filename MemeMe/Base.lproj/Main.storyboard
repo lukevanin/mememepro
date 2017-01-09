@@ -112,17 +112,17 @@
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="kcf-kS-0wV"/>
-                        <barButtonItem title="Camera" id="xkf-mg-jm0">
+                        <barButtonItem tag="500" systemItem="camera" id="xkf-mg-jm0">
                             <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-                                <action selector="onCameraAction:" destination="F9q-rP-Fue" id="Omg-5m-G3s"/>
+                                <action selector="onImportAction:" destination="F9q-rP-Fue" id="gSy-GB-QQc"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="6hW-9W-bG9"/>
-                        <barButtonItem title="Album" id="XN2-1a-tdq">
+                        <barButtonItem tag="501" systemItem="organize" id="XN2-1a-tdq">
                             <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-                                <action selector="onAlbumAction:" destination="F9q-rP-Fue" id="pal-Ix-3CQ"/>
+                                <action selector="onImportAction:" destination="F9q-rP-Fue" id="bhW-tp-WlC"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="5Ya-lw-kkF"/>
@@ -134,7 +134,7 @@
                                 <action selector="onShareAction:" destination="F9q-rP-Fue" id="mJi-aH-l2t"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="cancel" id="14z-kj-uif">
+                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="14z-kj-uif">
                             <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <action selector="onClearAction:" destination="F9q-rP-Fue" id="URj-wy-V1c"/>
@@ -232,11 +232,11 @@
             </objects>
             <point key="canvasLocation" x="-1172" y="75"/>
         </scene>
-        <!--Memes Collection View Controller-->
+        <!--Meme Me-->
         <scene sceneID="Wts-Hf-9tb">
             <objects>
                 <collectionViewController id="BSp-M8-pse" customClass="MemesCollectionViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="gJR-iq-Sbx">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="gJR-iq-Sbx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
@@ -277,7 +277,7 @@
                             <outlet property="delegate" destination="BSp-M8-pse" id="fIh-T5-L00"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" id="Sme-eg-2CO">
+                    <navigationItem key="navigationItem" title="Meme Me" id="Sme-eg-2CO">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="3vp-EN-fye">
                             <connections>
                                 <segue destination="fhX-zf-ukp" kind="presentation" identifier="edit" id="bzO-NG-lgC"/>
@@ -289,7 +289,7 @@
             </objects>
             <point key="canvasLocation" x="555.07246376811599" y="483.42391304347831"/>
         </scene>
-        <!--Memes Table View Controller-->
+        <!--Meme Me-->
         <scene sceneID="RYg-eV-Icf">
             <objects>
                 <tableViewController id="vCJ-sA-cQI" customClass="MemesTableViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
@@ -303,7 +303,7 @@
                                 <rect key="frame" x="0.0" y="28" width="320" height="141"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="84U-ec-D4P" id="5ae-pu-ta0">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="140.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="140"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="mor-Na-Q1f">
@@ -358,7 +358,7 @@
                             <outlet property="delegate" destination="vCJ-sA-cQI" id="HfV-ND-qnI"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="UYz-eL-PnL">
+                    <navigationItem key="navigationItem" title="Meme Me" id="UYz-eL-PnL">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="gZB-PJ-HiB">
                             <connections>
                                 <segue destination="fhX-zf-ukp" kind="presentation" identifier="edit" id="TnG-rT-34L"/>

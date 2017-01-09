@@ -5,6 +5,8 @@
 //  Created by Luke Van In on 2017/01/07.
 //  Copyright © 2017 Luke Van In. All rights reserved.
 //
+//  Display a precomposed meme.
+//
 
 import UIKit
 
